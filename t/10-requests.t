@@ -23,6 +23,13 @@ is($request_v->uri->as_string,'https://api.authy.com/protected/json/verify/12345
 is($request_v->method,'GET','Checking verify request method');
 is($request_v->content,'','Checking verify request content');
 
+my $request_sms = $authy->sms_request('123');
+
+isa_ok($request_sms,'HTTP::Request','request new user');
+is($request_sms->uri->as_string,'https://api.authy.com/protected/json/sms/123?api_key=123456','Checking sms request uri');
+is($request_sms->method,'GET','Checking sms request method');
+is($request_sms->content,'','Checking sms request content');
+
 my $sandbox_authy = WWW::Authy->new('123456', sandbox => 1);
 
 isa_ok($sandbox_authy,'WWW::Authy','sandbox authy object');
@@ -40,5 +47,12 @@ isa_ok($sandbox_request_v,'HTTP::Request','sandbox request verify');
 is($sandbox_request_v->uri->as_string,'http://sandbox-api.authy.com/protected/json/verify/123456/1?api_key=123456','Checking sandbox verify request uri');
 is($sandbox_request_v->method,'GET','Checking sandbox verify request method');
 is($sandbox_request_v->content,'','Checking sandbox verify request content');
+
+my $sandbox_request_sms = $sandbox_authy->sms_request('123');
+
+isa_ok($sandbox_request_sms,'HTTP::Request','request new user');
+is($sandbox_request_sms->uri->as_string,'http://sandbox-api.authy.com/protected/json/sms/123?api_key=123456','Checking sms request uri');
+is($sandbox_request_sms->method,'GET','Checking sms request method');
+is($sandbox_request_sms->content,'','Checking sms request content');
 
 done_testing;

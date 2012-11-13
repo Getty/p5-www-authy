@@ -10,6 +10,8 @@ package WWW::Authy;
 
   $authy->verify($id,$token) or print (Dumper $authy->errors);
 
+  $authy->sms($id); # send sms for token
+
 =cut
 
 use MooX qw(
@@ -218,6 +220,32 @@ sub verify {
 	my $self = shift;
 	$self->clear_errors;
 	my $response = $self->useragent->request($self->verify_request(@_));
+	if ($response->is_success) {
+		return 1;
+	} else {
+		my $data = $self->json->decode($response->content);
+		$self->errors($data->{errors});
+		return 0;
+	}
+}
+
+sub sms_request {
+	my ( $self, $id ) = @_;
+	my $uri = $self->make_url('sms',$id);
+	return GET($uri->as_string);
+}
+
+=method sms
+
+Send a SMS to the given user id. Please be aware that this may produce cost.
+See the pricing on L<http://www.authy.com/pricing/> for more informations.
+
+=cut
+
+sub sms {
+	my $self = shift;
+	$self->clear_errors;
+	my $response = $self->useragent->request($self->sms_request(@_));
 	if ($response->is_success) {
 		return 1;
 	} else {
